@@ -1,38 +1,38 @@
 import streamlit as st
 import boto3
-from io import BytesIO
-from PIL import Image as PILImage
 
 # AWS S3 Configuration
-aws_access_key_id = st.secrets["AWS_ACCESS_KEY_ID"]
-aws_secret_access_key = st.secrets["AWS_SECRET_ACCESS_KEY"]
-region_name = st.secrets["AWS_DEFAULT_REGION"]
-bucket_name = st.secrets["BUCKET_NAME"]
+aws_access_key_id = st.secrets["aws_access_key_id"]
+aws_secret_access_key = st.secrets["aws_secret_access_key"]
+region_name = st.secrets["region_name"]
+bucket_name = st.secrets["bucket_name"]
 
+# Initialize S3 client
 s3 = boto3.client('s3', region_name=region_name, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
-bucket_name =bucket_name
 
-# Function to list images in S3 bucket
-def list_images():
+# Function to list image names in S3 bucket
+def list_image_names():
     response = s3.list_objects_v2(Bucket=bucket_name)
     if 'Contents' in response:
         return [obj['Key'] for obj in response['Contents']]
     return []
 
-# Function to display images from S3
-def display_images():
-    st.subheader("List of Images")
-    images = list_images()
+# Function to display images from S3 with names
+def display_images_with_names():
+    st.subheader("List of Images from S3 with Names")
+    images = list_image_names()
     for img_key in images:
-        st.image(read_image_from_s3(img_key), width=200)
+        img_name = img_key.split('/')[-1]
+        st.write(f"Image Name: {img_name}")
+        st.image(read_image_from_s3(img_key), caption=img_name, use_column_width=True)
 
 # Function to read image from S3
 def read_image_from_s3(key):
     obj = s3.get_object(Bucket=bucket_name, Key=key)
     img_data = obj['Body'].read()
-    return PILImage.open(BytesIO(img_data))
+    return img_data
 
-# Main function
+# Streamlit app function
 def main():
     st.title("CRUD Operations on Pictures using S3")
 
@@ -48,11 +48,11 @@ def main():
             st.success("Image uploaded successfully to S3!")
 
     elif choice == "Read":
-        display_images()
+        display_images_with_names()
 
     elif choice == "Update":
         st.subheader("Update Pictures in S3")
-        images = list_images()
+        images = list_image_names()
         selected_image = st.selectbox("Select Image to Update", images)
         updated_file = st.file_uploader("Upload New Image", type=['png', 'jpg', 'jpeg'])
         if updated_file is not None:
@@ -62,7 +62,7 @@ def main():
 
     elif choice == "Delete":
         st.subheader("Delete Pictures from S3")
-        images = list_images()
+        images = list_image_names()
         selected_image = st.selectbox("Select Image to Delete", images)
         if st.button("Delete"):
             s3.delete_object(Bucket=bucket_name, Key=selected_image)
