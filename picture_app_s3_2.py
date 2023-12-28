@@ -2,10 +2,10 @@ import streamlit as st
 import boto3
 
 # AWS S3 Configuration
-aws_access_key_id = st.secrets["aws_access_key_id"]
-aws_secret_access_key = st.secrets["aws_secret_access_key"]
-region_name = st.secrets["region_name"]
-bucket_name = st.secrets["bucket_name"]
+aws_access_key_id = st.secrets["AWS_ACCESS_KEY_ID"]
+aws_secret_access_key = st.secrets["AWS_SECRET_ACCESS_KEY"]
+region_name = st.secrets["AWS_DEFAULT_REGION"]
+bucket_name = st.secrets["BUCKET_NAME"]
 
 # Initialize S3 client
 s3 = boto3.client('s3', region_name=region_name, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
