@@ -4,7 +4,7 @@ from io import BytesIO
 from PIL import Image as PILImage
 
 # AWS S3 Configuration
-s3 = boto3.client('s3', region_name='ap-east-1', aws_access_key_id='AKIAY3CGZFDXYJKOJRAM', aws_secret_access_key='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')
+s3 = boto3.client('s3', region_name=["AWS_DEFAULT_REGION"], aws_access_key_id=["AWS_ACCESS_KEY_ID"], aws_secret_access_key=["AWS_SECRET_ACCESS_KEY"])
 bucket_name = 'streamlitbucket-datnh30'
 
 # Function to list images in S3 bucket
